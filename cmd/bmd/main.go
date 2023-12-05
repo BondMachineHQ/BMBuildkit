@@ -2,18 +2,12 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/docker/cli/cli/config/configfile"
 	"github.com/docker/cli/cli/config/types"
-	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-containerregistry/pkg/name"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/google/go-containerregistry/pkg/v1/empty"
-	"github.com/google/go-containerregistry/pkg/v1/mutate"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/session"
@@ -21,20 +15,31 @@ import (
 	"github.com/moby/buildkit/util/appcontext"
 )
 
-type buildOpt struct {
-	withContainerd bool
-	containerd     string
-	runc           string
+func startBuildKitDaemon(c client.Client) error {
+
+	fmt.Println("BuildKit daemon started")
+	// Start the BuildKit daemon
+	if err := c.Wait(context.Background()); err != nil {
+		return fmt.Errorf("error starting BuildKit daemon: %s", err)
+	}
+
+	return nil
 }
 
 func main() {
-	var opt buildOpt
-	var addr string
-	flag.BoolVar(&opt.withContainerd, "with-containerd", true, "enable containerd worker")
-	flag.StringVar(&opt.containerd, "containerd", "v1.7.2", "containerd version")
-	flag.StringVar(&opt.runc, "runc", "v1.1.7", "runc version")
-	flag.StringVar(&addr, "addr", "1.1.7", "server socket addr")
-	flag.Parse()
+	// Replace this with your BuildKit daemon socket path
+	socketPathd := "unix:////var/run/docker/buildkit/buildkitd.sock"
+
+	// Create a context for the BuildKit client
+	ctx := appcontext.Context()
+
+	// Create a BuildKit client
+	cli, err := client.New(ctx, socketPathd)
+	if err != nil {
+		log.Panicf("error creating BuildKit client: %s", err)
+	}
+	// Start BuildKit daemon
+	go startBuildKitDaemon(*cli)
 
 	// // Define the LLB state (e.g., using a scratch image and adding a file)
 	state := llb.Scratch().File(llb.Copy(llb.Local("context"), "hello", "/hello"))
@@ -46,15 +51,6 @@ func main() {
 		panic(err)
 	}
 	llb.WriteTo(dt, os.Stdout)
-
-	ctx := appcontext.Context()
-
-	//cli, err := client.New(ctx, "unix:///run/user/1000/buildkit/buildkitd.sock")
-	cli, err := client.New(ctx, addr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error creating client: %v\n", err)
-		os.Exit(1)
-	}
 
 	localDir := "/home/dciangot/git/BMBuildkit"
 
@@ -105,77 +101,6 @@ func main() {
 	dgst := resp.ExporterResponse["containerimage.digest"]
 	fmt.Printf("Built image with digest %s\n", dgst)
 
-	// Image references
-	base := empty.Index
-	image1Ref := "docker.io/dciangot/test:v102"
-	image2Ref := "docker.io/dciangot/test:v101"
-
-	// // Annotation for image 1
-	// image1Annotations := map[string]string{
-	// 	"author":  "John Doe",
-	// 	"purpose": "Backend Service",
-	// }
-
-	// // Annotation for image 2
-	// image2Annotations := map[string]string{
-	// 	"author":  "Jane Smith",
-	// 	"purpose": "Frontend Service",
-	// }
-
-	img1ref, err := name.ParseReference(image1Ref)
-	if err != nil {
-		panic(err)
-	}
-
-	img1, err := remote.Get(img1ref)
-	if err != nil {
-		panic(err)
-	}
-
-	img1GOOD, err := img1.Image()
-	if err != nil {
-		panic(err)
-	}
-
-	img2ref, err := name.ParseReference(image2Ref)
-	if err != nil {
-		panic(err)
-	}
-
-	img2, err := remote.Get(img2ref)
-	if err != nil {
-		panic(err)
-	}
-
-	img2GOOD, err := img2.Image()
-	if err != nil {
-		panic(err)
-	}
-
-	// Create a new index image
-	idx := mutate.AppendManifests(base,
-		mutate.IndexAddendum{Add: img2GOOD, Descriptor: v1.Descriptor{
-			Annotations: map[string]string{
-				"foo": "bar",
-			},
-		}},
-		mutate.IndexAddendum{Add: img1GOOD},
-	)
-
-	// Push the index image to a registry
-	dest := "dciangot/index_image:latest"
-	tag, err := name.NewTag(dest, name.WeakValidation)
-	if err != nil {
-		panic(err)
-	}
-
-	err = remote.WriteIndex(tag, idx, remote.WithAuthFromKeychain(authn.DefaultKeychain))
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Index image %s created and pushed successfully.\n", dest)
-
 	// // Start listening on a socket
 	// socketPath := "/tmp/buildkit_daemon.sock" // Replace with your desired socket path
 	// l, err := net.Listen("unix", socketPath)
@@ -196,5 +121,4 @@ func main() {
 	// 	// Handle incoming connections concurrently
 	// 	go handleConnection(conn)
 	// }
-
 }

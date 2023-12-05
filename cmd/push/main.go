@@ -8,6 +8,12 @@ import (
 
 	"github.com/docker/cli/cli/config/configfile"
 	"github.com/docker/cli/cli/config/types"
+	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/empty"
+	"github.com/google/go-containerregistry/pkg/v1/mutate"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/session"
@@ -23,9 +29,11 @@ type buildOpt struct {
 
 func main() {
 	var opt buildOpt
+	var addr string
 	flag.BoolVar(&opt.withContainerd, "with-containerd", true, "enable containerd worker")
 	flag.StringVar(&opt.containerd, "containerd", "v1.7.2", "containerd version")
 	flag.StringVar(&opt.runc, "runc", "v1.1.7", "runc version")
+	flag.StringVar(&addr, "addr", "1.1.7", "server socket addr")
 	flag.Parse()
 
 	// // Define the LLB state (e.g., using a scratch image and adding a file)
@@ -40,7 +48,9 @@ func main() {
 	llb.WriteTo(dt, os.Stdout)
 
 	ctx := appcontext.Context()
-	cli, err := client.New(ctx, "unix:///run/user/1000/buildkit/buildkitd.sock")
+
+	//cli, err := client.New(ctx, "unix:///run/user/1000/buildkit/buildkitd.sock")
+	cli, err := client.New(ctx, addr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error creating client: %v\n", err)
 		os.Exit(1)
@@ -95,32 +105,96 @@ func main() {
 	dgst := resp.ExporterResponse["containerimage.digest"]
 	fmt.Printf("Built image with digest %s\n", dgst)
 
-	// dockerCLI, err := dockerClient.NewClientWithOpts(dockerClient.FromEnv, dockerClient.WithAPIVersionNegotiation())
+	// Image references
+	base := empty.Index
+	image1Ref := "docker.io/dciangot/test:v102"
+	image2Ref := "docker.io/dciangot/test:v101"
+
+	// // Annotation for image 1
+	// image1Annotations := map[string]string{
+	// 	"author":  "John Doe",
+	// 	"purpose": "Backend Service",
+	// }
+
+	// // Annotation for image 2
+	// image2Annotations := map[string]string{
+	// 	"author":  "Jane Smith",
+	// 	"purpose": "Frontend Service",
+	// }
+
+	img1ref, err := name.ParseReference(image1Ref)
+	if err != nil {
+		panic(err)
+	}
+
+	img1, err := remote.Get(img1ref)
+	if err != nil {
+		panic(err)
+	}
+
+	img1GOOD, err := img1.Image()
+	if err != nil {
+		panic(err)
+	}
+
+	img2ref, err := name.ParseReference(image2Ref)
+	if err != nil {
+		panic(err)
+	}
+
+	img2, err := remote.Get(img2ref)
+	if err != nil {
+		panic(err)
+	}
+
+	img2GOOD, err := img2.Image()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new index image
+	idx := mutate.AppendManifests(base,
+		mutate.IndexAddendum{Add: img2GOOD, Descriptor: v1.Descriptor{
+			Annotations: map[string]string{
+				"foo": "bar",
+			},
+		}},
+		mutate.IndexAddendum{Add: img1GOOD},
+	)
+
+	// Push the index image to a registry
+	dest := "dciangot/index_image:latest"
+	tag, err := name.NewTag(dest, name.WeakValidation)
+	if err != nil {
+		panic(err)
+	}
+
+	err = remote.WriteIndex(tag, idx, remote.WithAuthFromKeychain(authn.DefaultKeychain))
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Index image %s created and pushed successfully.\n", dest)
+
+	// // Start listening on a socket
+	// socketPath := "/tmp/buildkit_daemon.sock" // Replace with your desired socket path
+	// l, err := net.Listen("unix", socketPath)
 	// if err != nil {
-	// 	fmt.Println("Error creating Docker client:", err)
-	// 	os.Exit(1)
+	// 	log.Fatalf("error creating socket listener: %s", err)
+	// }
+	// defer l.Close()
+
+	// fmt.Printf("BuildKit Daemon listening on %s\n", socketPath)
+
+	// // Accept incoming connections
+	// for {
+	// 	conn, err := l.Accept()
+	// 	if err != nil {
+	// 		log.Fatalf("error accepting connection: %s", err)
+	// 	}
+
+	// 	// Handle incoming connections concurrently
+	// 	go handleConnection(conn)
 	// }
 
-	// // Define the annotation key and value you want to filter by
-	// annotationKey := "annotation.org.opencontainers.image.title"
-	// annotationValue := "easda"
-
-	// // Create a filter map
-	// filters := filters.NewArgs(filters.KeyValuePair{
-	// 	Key:   "label",
-	// 	Value: fmt.Sprintf("%s=%s", annotationKey, annotationValue),
-	// })
-
-	// // List images with the applied filter
-	// images, err := dockerCLI.ImageList(ctx, apiTypes.ImageListOptions{Filters: filters})
-	// if err != nil {
-	// 	fmt.Println("Error listing images:", err)
-	// 	os.Exit(1)
-	// }
-
-	// fmt.Println("Found images:", images)
-	// // Print out the filtered images
-	// for _, image := range images {
-	// 	fmt.Println("Found image:", image.ID)
-	// }
 }
