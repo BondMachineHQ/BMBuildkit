@@ -21,6 +21,10 @@ import (
 	"github.com/moby/buildkit/util/appcontext"
 )
 
+// "github.com/BondMachineHQ/BMBuildkit/pkg/build"
+// "github.com/BondMachineHQ/BMBuildkit/pkg/image"
+// "github.com/BondMachineHQ/BMBuildkit/pkg/load"
+
 type buildOpt struct {
 	withContainerd bool
 	containerd     string
@@ -28,11 +32,7 @@ type buildOpt struct {
 }
 
 func main() {
-	var opt buildOpt
 	var addr string
-	flag.BoolVar(&opt.withContainerd, "with-containerd", true, "enable containerd worker")
-	flag.StringVar(&opt.containerd, "containerd", "v1.7.2", "containerd version")
-	flag.StringVar(&opt.runc, "runc", "v1.1.7", "runc version")
 	flag.StringVar(&addr, "addr", "1.1.7", "server socket addr")
 	flag.Parse()
 

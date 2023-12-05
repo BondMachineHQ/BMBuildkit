@@ -1,0 +1,8 @@
+SYNTH yosys-ice40
+
+VENDOR lattice
+MODEL ice40
+
+SOURCE ./blinky
+
+# SYNTH_CMD
