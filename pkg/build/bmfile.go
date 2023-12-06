@@ -5,7 +5,7 @@ func ParseBMFile(contet []byte) (BMFile, error) {
 	return BMFile{}, nil
 }
 
-func ExecuteEngine(bmfile BMFile) error {
+func ExecuteEngine(bmfile BMFile, synthEngine SynthEngine) error {
 
 	return nil
 }
