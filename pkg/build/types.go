@@ -8,11 +8,12 @@ type BMImage struct {
 }
 
 type BMFile struct {
-	Synth    string
-	SynthCMD string
-	Vendor   string
-	Model    string
-	Source   string
+	Synth     string
+	SynthCMD  string
+	SynthFile string
+	Vendor    string
+	Model     string
+	Source    string
 }
 
 type SynthEngine interface {
@@ -20,4 +21,6 @@ type SynthEngine interface {
 	Synth() error
 	PNR() error
 	Packing() error
+	GetFirmwareFile() (string, error)
+	GetBuildDir() (string, error)
 }

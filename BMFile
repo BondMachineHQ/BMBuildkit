@@ -3,6 +3,8 @@ SYNTH yosys-ice40
 VENDOR lattice
 MODEL ice40
 
-SOURCE ./blinky
+SOURCE ./examples/blinky
+
+SYNTH_FILE blinky.v
 
 # SYNTH_CMD

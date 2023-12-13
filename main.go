@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/BondMachineHQ/BMBuildkit/pkg/build"
 	"github.com/docker/cli/cli/config/configfile"
 	"github.com/docker/cli/cli/config/types"
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -33,11 +34,45 @@ type buildOpt struct {
 
 func main() {
 	var addr string
-	flag.StringVar(&addr, "addr", "1.1.7", "server socket addr")
+	var bmfilePath string
+	flag.StringVar(&addr, "addr", "", "server socket addr")
+	flag.StringVar(&bmfilePath, "file", "BMFile", "server socket addr")
 	flag.Parse()
 
+	fileBytes, err := os.ReadFile(bmfilePath)
+	if err != nil {
+		panic(err)
+	}
+
+	bmfile, err := build.ParseBMFile(fileBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(bmfile)
+
+	var engine build.SynthEngine
+
+	if bmfile.Vendor == "lattice" {
+		engine = &build.Yosys{
+			Config: bmfile,
+		}
+	}
+
+	build.ExecuteEngine(engine)
+
+	firmwareFile, err := engine.GetFirmwareFile()
+	if err != nil {
+		panic(err)
+	}
+
+	buildPath, err := engine.GetBuildDir()
+	if err != nil {
+		panic(err)
+	}
+
 	// // Define the LLB state (e.g., using a scratch image and adding a file)
-	state := llb.Scratch().File(llb.Copy(llb.Local("context"), "hello", "/hello"))
+	state := llb.Scratch().File(llb.Copy(llb.Local("context"), firmwareFile, "/firmware.bin"))
 
 	dt, err := state.Marshal(
 		context.TODO(),
@@ -55,8 +90,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error creating client: %v\n", err)
 		os.Exit(1)
 	}
-
-	localDir := "/home/dciangot/git/BMBuildkit"
 
 	// Set up the session with credential helper
 	sess, err := session.NewSession(ctx, "my-session", "")
@@ -91,7 +124,7 @@ func main() {
 		},
 
 		LocalDirs: map[string]string{
-			"context": localDir,
+			"context": buildPath,
 		},
 		SharedSession: sess,
 	}, nil)
