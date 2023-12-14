@@ -7,11 +7,13 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 type Yosys struct {
-	Config   BMFile
-	BuildDir string
+	Config     BMFile
+	BuildDir   string
+	ModuleName string
 }
 
 func CopyFile(source string, dest string) (err error) {
@@ -92,7 +94,9 @@ func (t *Yosys) LoadData() error {
 
 	t.BuildDir = dir
 
-	fmt.Println(dir)
+	t.ModuleName = strings.Split(t.Config.SynthFile, ".v")[0]
+
+	fmt.Println(t.ModuleName)
 
 	source := t.Config.Source
 	dest := dir
@@ -110,7 +114,7 @@ func (t *Yosys) Synth() error {
 	fmt.Println(t.Config.SynthCMD)
 
 	if t.Config.SynthCMD == "" {
-		cmdStr := "cd " + t.BuildDir + "; yosys -p 'synth_ice40 -top blinky -json blinky.json' " + t.Config.SynthFile
+		cmdStr := "cd " + t.BuildDir + "; yosys -p 'synth_ice40 -top " + t.ModuleName + " -json " + t.ModuleName + ".json' " + t.Config.SynthFile
 		cmd := exec.Command("/bin/sh", "-c", cmdStr)
 		stderr, _ := cmd.StderrPipe()
 		if err := cmd.Start(); err != nil {
@@ -128,7 +132,7 @@ func (t *Yosys) Synth() error {
 
 func (t *Yosys) PNR() error {
 
-	cmdStr := "cd " + t.BuildDir + "; nextpnr-ice40 --hx1k --json blinky.json --pcf blinky.pcf --asc blinky.asc"
+	cmdStr := "cd " + t.BuildDir + "; nextpnr-ice40 --package tq144 --hx1k --json " + t.ModuleName + ".json --pcf " + t.ModuleName + ".pcf --asc " + t.ModuleName + ".asc"
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {
@@ -145,7 +149,7 @@ func (t *Yosys) PNR() error {
 
 func (t *Yosys) Packing() error {
 
-	cmdStr := "cd " + t.BuildDir + "; icepack blinky.asc blinky.bin"
+	cmdStr := "cd " + t.BuildDir + "; icepack " + t.ModuleName + ".asc " + t.ModuleName + ".bin"
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {
