@@ -164,8 +164,8 @@ func (t *Yosys) Packing() error {
 	return nil
 }
 
-func (t *Yosys) LoadFirmware() error {
-	cmdStr := "cd " + t.BuildDir + "; iceprog " + t.ModuleName + ".bin"
+func (t *Yosys) LoadFirmware(firmwarePath string) error {
+	cmdStr := "cd " + t.BuildDir + "; iceprog " + firmwarePath
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {

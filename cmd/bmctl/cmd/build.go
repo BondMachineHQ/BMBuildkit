@@ -112,8 +112,8 @@ func buildFirmware(cmd *cobra.Command, args []string) error {
 
 var buildCmd = &cobra.Command{
 	Use:   "build [context path (pwd default)]",
-	Short: "Print the version number of Hugo",
-	Long:  `All software has versions. This is Hugo's`,
+	Short: "Build a BMImage artifact",
+	Long:  `Build first, then ship your algorithm artifact to a container registry`,
 	RunE:  buildFirmware,
 	Args:  cobra.MinimumNArgs(1),
 }

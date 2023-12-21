@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func PullArtifact(imageName string, platform string) error {
+func PullArtifact(imageName string, platform string) (string, error) {
 
 	splitPlatform := strings.Split(platform, "/")
 
@@ -31,12 +31,12 @@ func PullArtifact(imageName string, platform string) error {
 
 	img, err := crane.Pull(imageName, crane.WithPlatform(&pltf))
 	if err != nil {
-		panic(err)
+		return "", nil
 	}
 
-	fo, err := os.Create("temp.bin")
+	fo, err := os.CreateTemp("", "tmpfile-") // in Go version older than 1.17 you can use ioutil.TempFile
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	// close fo on exit and check for its returned error
 	defer func() {
@@ -49,7 +49,7 @@ func PullArtifact(imageName string, platform string) error {
 
 	crane.Export(img, w)
 
-	return fmt.Errorf("NOT IMPLEMENTED YET")
+	return fo.Name(), nil
 }
 
 func PullHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func PullHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = PullArtifact(img.ArtifactName, img.BoardModel)
+	firmwarePath, err := PullArtifact(img.ArtifactName, img.BoardModel)
 	if err != nil {
 		log.Errorf("Error during pulling of the image: %s", err)
 		fmt.Fprintf(w, "Error during pulling of the image")
@@ -84,5 +84,6 @@ func PullHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Infof("Received request to pull %s", img.ArtifactName)
+	log.Infof("Stored artifact at %s", firmwarePath)
 	fmt.Fprintf(w, "Pulled artifact.")
 }

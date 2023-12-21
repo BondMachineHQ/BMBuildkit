@@ -22,7 +22,7 @@ type SynthEngine interface {
 	Synth() error
 	PNR() error
 	Packing() error
-	LoadFirmware() error
+	LoadFirmware(firmwarePath string) error
 	GetFirmwareFile() (string, error)
 	GetBuildDir() (string, error)
 }

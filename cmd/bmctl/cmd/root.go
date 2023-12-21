@@ -39,8 +39,10 @@ func init() {
 
 	buildCmd.MarkPersistentFlagRequired("target")
 
+	loadCmd.PersistentFlags().StringP("cmd", "c", "", "custom command for loading firmware")
+
 	rootCmd.AddCommand(buildCmd)
-	//rootCmd.AddCommand(initCmd)
+	rootCmd.AddCommand(loadCmd)
 }
 
 func initConfig() {

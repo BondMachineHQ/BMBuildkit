@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/BondMachineHQ/BMBuildkit/pkg/build"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -33,13 +34,28 @@ func LoadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = PullArtifact(img.ArtifactName, img.BoardModel)
+	firmwarePath, err := PullArtifact(img.ArtifactName, img.BoardModel)
 	if err != nil {
 		log.Errorf("Error during pulling of the image: %s", err)
 		fmt.Fprintf(w, "Error during pulling of the image")
 		return
 	}
 
-	log.Infof("Discovery not supported yet")
-	fmt.Fprintf(w, "Discovery not supported yet")
+	var engine *build.Yosys
+	if img.BoardModel == "lattice" {
+		engine = &build.Yosys{}
+	} else {
+		log.Errorf("synth engine not available for %s", img.BoardModel)
+		fmt.Fprintf(w, "synth engine not available")
+		return
+	}
+
+	err = engine.LoadFirmware(firmwarePath)
+	if err != nil {
+		log.Errorf("Error during loading firmware: %s", err)
+		fmt.Fprintf(w, "Error during loading firmware")
+		return
+	}
+	//log.Infof("Discovery not supported yet")
+	//fmt.Fprintf(w, "Discovery not supported yet")
 }
