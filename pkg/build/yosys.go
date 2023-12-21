@@ -165,7 +165,7 @@ func (t *Yosys) Packing() error {
 }
 
 func (t *Yosys) LoadFirmware(firmwarePath string) error {
-	cmdStr := "cd " + t.BuildDir + "; iceprog " + firmwarePath
+	cmdStr := "cd " + t.BuildDir + "; sudo iceprog " + firmwarePath
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {
