@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+
+	"github.com/BondMachineHQ/BMBuildkit/pkg/bondmachined"
 )
 
 func main() {
@@ -20,10 +22,12 @@ func main() {
 	// Create a new HTTPServeMux
 	mux := http.NewServeMux()
 
-	// Handle GET requests to /message
-	mux.HandleFunc("/message", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello from the Go daemon!")
-	})
+	// Handle GET requests to list available board
+	mux.HandleFunc("/discovery", bondmachined.DiscoveryHandler)
+	// Handle POST requests to pull artifact
+	mux.HandleFunc("/pull", bondmachined.PullHandler)
+	// Handle POST requests to pull artifact
+	mux.HandleFunc("/load", bondmachined.LoadHandler)
 
 	// Serve HTTP requests on the Unix socket
 	http.Handle("/", mux)

@@ -1,0 +1,6 @@
+SYNTH local
+
+VENDOR lattice
+MODEL ice40
+
+BITSTREAM_PATH

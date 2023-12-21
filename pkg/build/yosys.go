@@ -164,10 +164,26 @@ func (t *Yosys) Packing() error {
 	return nil
 }
 
+func (t *Yosys) LoadFirmware() error {
+	cmdStr := "cd " + t.BuildDir + "; iceprog " + t.ModuleName + ".bin"
+	cmd := exec.Command("/bin/sh", "-c", cmdStr)
+	stderr, _ := cmd.StderrPipe()
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+
+	scanner := bufio.NewScanner(stderr)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+
+	return nil
+}
+
 func (t *Yosys) GetBuildDir() (string, error) {
 	return t.BuildDir, nil
 }
 
 func (t *Yosys) GetFirmwareFile() (string, error) {
-	return "blinky.bin", nil
+	return t.ModuleName + ".bin", nil
 }

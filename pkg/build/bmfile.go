@@ -23,6 +23,8 @@ func ParseBMFile(content []byte) (BMFile, error) {
 			bmfile.Model = cmd[1]
 		case "SOURCE":
 			bmfile.Source = cmd[1]
+		case "BITSTREAM_PATH":
+			bmfile.BitstreamPath = cmd[1]
 		}
 	}
 

@@ -8,3 +8,4 @@ SOURCE ./examples/blinky
 SYNTH_FILE blinky.v
 
 # SYNTH_CMD
+# BITSTREAM_PATH
