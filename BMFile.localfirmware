@@ -3,4 +3,4 @@ SYNTH local
 VENDOR lattice
 MODEL ice40
 
-BITSTREAM_PATH
+BITSTREAM_PATH ./temp.bin
