@@ -1,12 +1,12 @@
-# BMBuildkit
+---
+sidebar_position: 1
+---
 
-For the complete documentation navigate the [BMBuildKit website](https://bondmachishq.github.io/bmbuildkit)
-
-## Quickstart
+# Quickstart
 
 The following is a quick example on how to get started with a demo Lattice ice40 stick FPGA and a blinky led algorithm.
 
-### Install bmctl CLI
+## Install bmctl CLI
 
 ```bash
 git clone https://github.com/BondMachineHQ/BMBuildkit
@@ -14,7 +14,7 @@ cd BMBuildkit
 go install ./cmd/bmctl
 ```
 
-### Build, tag and share your FPGA algorithms
+## Build, tag and share your FPGA algorithms
 
 __N.B.__ you need an host
 with [icepack](https://github.com/YosysHQ/icestorm), [nextpnr](https://github.com/YosysHQ/nextpnr)
@@ -25,13 +25,13 @@ steps below.
 bmctl build ./ -f BMFile -t <dockerhub USERNAME>/bmtest:built
 ```
 
-### (alternative) Upload a pre-built firmware
+## (alternative) Upload a pre-built firmware
 
 ```bash
 bmctl build ./ -f BMFile.localfirmware -t <dockerhub USERNAME>/bmtest:pre-built
 ```
 
-### Load the firmware on the board
+## Load the firmware on the board
 
 __N.B.__ you need an host with [iceprog](https://github.com/YosysHQ/icestorm) installed.
 
