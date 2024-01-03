@@ -1,6 +1,6 @@
 # BMBuildkit
 
-For the complete documentation navigate the [BMBuildKit website](https://bondmachishq.github.io/bmbuildkit)
+For the complete documentation navigate the [BMBuildKit website](https://bondmachinehq.github.io/BMBuildkit/)
 
 ## Quickstart
 
