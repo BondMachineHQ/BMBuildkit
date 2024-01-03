@@ -49,11 +49,15 @@ func buildFirmware(cmd *cobra.Command, args []string) error {
 			engine = &build.Yosys{
 				Config: bmfile,
 			}
+			err = build.ExecuteEngine(engine)
+			if err != nil {
+				return err
+			}
+		} else if bmfile.Vendor == "dagger" {
+			fmt.Println("Dagger engine selected")
 		} else {
 			return fmt.Errorf("synth engine not available for %s", bmfile.Vendor)
 		}
-
-		build.ExecuteEngine(engine)
 
 		firmwareFilePath, err = engine.GetFirmwareFile()
 		if err != nil {
