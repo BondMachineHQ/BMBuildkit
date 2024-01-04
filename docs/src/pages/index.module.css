@@ -21,3 +21,9 @@
     align-items: center;
     justify-content: center;
 }
+
+.featureSvg {
+    display: flex;
+    height: 20%;
+    width: 20%;
+}

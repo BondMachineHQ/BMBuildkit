@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# bmctl documentation
+# BMBuildKit documentation
 
 ## Getting Started
 

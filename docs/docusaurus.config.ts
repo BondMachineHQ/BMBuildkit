@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
     title: 'BMBuildKit',
     tagline: 'A new era for FPGA programming',
-    favicon: 'img/favicon.ico',
+    favicon: 'img/logo.png',
 
     // Set the production url of your site here
     url: 'https://bondmachinehq.github.io',
@@ -50,7 +50,7 @@ const config: Config = {
             title: 'BMBuildKit',
             logo: {
                 alt: 'My Site Logo',
-                src: 'img/logo.svg',
+                src: 'img/logo.png',
             },
             items: [
                 {

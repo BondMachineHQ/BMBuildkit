@@ -10,32 +10,32 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
     {
-        title: 'Easy to Use',
-        Svg: require('@site/static/img/home-1.svg').default,
-        description: (
-            <>
-                Docusaurus was designed from the ground up to be easily installed and
-                used to get your website up and running quickly.
-            </>
-        ),
-    },
-    {
-        title: 'Focus on What Matters',
+        title: 'Docker-like simple!',
         Svg: require('@site/static/img/home-2.svg').default,
         description: (
             <>
-                Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-                ahead and move your docs into the <code>docs</code> directory.
+                Designed for emulating the experience of a container build via Docker.
+                You define a BMFile and an FPGA board, the rest is on us.
             </>
         ),
     },
     {
-        title: 'Powered by React',
+        title: 'Program FPGA on the cloud... if want to',
+        Svg: require('@site/static/img/home-1.svg').default,
+        description: (
+            <>
+                Get your firmware from any container registry and program your FPGA with a single command.
+                And yes, CI/CD is never been easier.
+            </>
+        ),
+    },
+    {
+        title: 'Prototype as you want!',
         Svg: require('@site/static/img/home-3.svg').default,
         description: (
             <>
-                Extend or customize your website layout by reusing React. Docusaurus can
-                be extended while reusing the same header and footer.
+                Your firmwares will be tagged like a usual container image, thus keeping track of all your experiments.
+                Comparing the performances will be a walk in the park.
             </>
         ),
     },
