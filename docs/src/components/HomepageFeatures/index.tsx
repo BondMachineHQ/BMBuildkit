@@ -20,7 +20,7 @@ const FeatureList: FeatureItem[] = [
         ),
     },
     {
-        title: 'Program FPGA on the cloud... if want to',
+        title: 'Program FPGA on the cloud... if you want to',
         Svg: require('@site/static/img/home-1.svg').default,
         description: (
             <>
