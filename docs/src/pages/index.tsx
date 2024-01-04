@@ -8,6 +8,8 @@ import Heading from '@theme/Heading';
 import styles from './index.module.css';
 import ThemedImage from "@theme/ThemedImage";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import DocusaurusSvg from '@site/static/img/logo.svg';
+
 
 function HomepageHeader() {
     const {siteConfig} = useDocusaurusContext();
@@ -15,17 +17,13 @@ function HomepageHeader() {
         <header className={clsx('hero hero--primary', styles.heroBanner)}>
 
             <div className="container">
-                <ThemedImage className={styles.featureSvg}
-                             alt="Docusaurus themed image"
-                             sources={{
-                                 light: useBaseUrl('/img/logo.svg'),
-                                 dark: useBaseUrl('/img/logo.svg'),
-                             }}
-                />
                 <Heading as="h1" className="hero__title">
                     {siteConfig.title}
                 </Heading>
                 <p className="hero__subtitle">{siteConfig.tagline}</p>
+                <div className={styles.buttons}>
+                    <DocusaurusSvg className={styles.featureSvg}/>
+                </div>
                 <div className={styles.buttons}>
                     <Link
                         className="button button--secondary button--lg"
