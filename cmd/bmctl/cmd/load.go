@@ -16,6 +16,10 @@ func loadFirmware(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	deviceID, err := cmd.Flags().GetString("device")
+	if err != nil {
+		return err
+	}
 
 	customCMD, err := cmd.Flags().GetString("cmd")
 	if err != nil {
@@ -37,14 +41,16 @@ func loadFirmware(cmd *cobra.Command, args []string) error {
 		}
 	} else {
 		vendor := strings.Split(args[1], "/")[0]
-		var engine *build.Yosys
+		var engine build.SynthEngine
 		if vendor == "lattice" {
 			engine = &build.Yosys{}
+		} else if vendor == "xilinx" {
+			engine = &build.Xilinx{}
 		} else {
 			return fmt.Errorf("synth engine not available for %s", vendor)
 		}
 
-		err = engine.LoadFirmware(firmwarePath)
+		err = engine.LoadFirmware(firmwarePath, deviceID)
 		if err != nil {
 			return err
 		}

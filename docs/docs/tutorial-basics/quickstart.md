@@ -31,12 +31,28 @@ bmctl build ./ -f BMFile -t <dockerhub USERNAME>/bmtest:built
 bmctl build ./ -f BMFile.localfirmware -t <dockerhub USERNAME>/bmtest:pre-built
 ```
 
+### Upload demo alveo u50 firmware
+
+```bash
+wget http://bondmachine.fisica.unipg.it/firmwares/bmfloat16.xclbin
+
+bmctl build ./ -f BMFile.localfirmware-alveo -t <dockerhub USERNAME>/bmtest-alveo:pre-built
+```
+
 ## Load the firmware on the board
 
 __N.B.__ you need an host with [iceprog](https://github.com/YosysHQ/icestorm) installed.
 
 ```bash
-bmctl load <dockerhub USERNAME>/bmtest:pre-built lattice/ice40/yosys
+bmctl load <dockerhub USERNAME>/bmtest:pre-built xilinx/alveou50/xrt
+```
+
+### Alveo u50 load firmware
+
+__N.B.__ you need [Xilinx runtime](https://github.com/Xilinx/Xilinx_Base_Runtime) installed and sourced for this to run.
+
+```bash
+bmctl load  <dockerhub USERNAME>/bmtest-alveo:pre-built lattice/ice40/yosys
 ```
 
 ## Quick build with ice40 docker

@@ -40,6 +40,7 @@ func init() {
 	buildCmd.MarkPersistentFlagRequired("target")
 
 	loadCmd.PersistentFlags().StringP("cmd", "c", "", "custom command for loading firmware")
+	loadCmd.PersistentFlags().StringP("device", "d", "", "device ID for target board")
 
 	rootCmd.AddCommand(buildCmd)
 	rootCmd.AddCommand(loadCmd)

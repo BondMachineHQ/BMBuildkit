@@ -1,0 +1,6 @@
+SYNTH local
+
+VENDOR xilinx
+MODEL alveo-u50
+
+BITSTREAM_PATH ./bmfloat16.xclbin
