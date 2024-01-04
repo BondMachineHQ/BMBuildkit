@@ -50,7 +50,7 @@ func LoadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = engine.LoadFirmware(firmwarePath)
+	err = engine.LoadFirmware(firmwarePath, "")
 	if err != nil {
 		log.Errorf("Error during loading firmware: %s", err)
 		fmt.Fprintf(w, "Error during loading firmware")
