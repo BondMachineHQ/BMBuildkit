@@ -63,7 +63,7 @@ func (t *Yosys) Synth() error {
 
 func (t *Yosys) PNR() error {
 
-	cmdStr := "cd " + t.BuildDir + "; nextpnr-ice40 --package tq144 --hx1k --json " + t.ModuleName + ".json --pcf " + t.ModuleName + ".pcf --asc " + t.ModuleName + ".asc"
+	cmdStr := "cd " + t.BuildDir + "; nextpnr-ice40 --hx1k --json " + t.ModuleName + ".json --pcf " + t.ModuleName + ".pcf --asc " + t.ModuleName + ".asc"
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {
@@ -96,7 +96,7 @@ func (t *Yosys) Packing() error {
 }
 
 func (t *Yosys) LoadFirmware(firmwarePath string, deviceID string) error {
-	cmdStr := "iceprog " + firmwarePath
+	cmdStr := "tar -xvf "+ firmwarePath + " && iceprog firmware.bin"
 	cmd := exec.Command("/bin/sh", "-c", cmdStr)
 	stderr, _ := cmd.StderrPipe()
 	if err := cmd.Start(); err != nil {

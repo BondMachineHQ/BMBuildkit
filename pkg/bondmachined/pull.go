@@ -31,12 +31,12 @@ func PullArtifact(imageName string, platform string) (string, error) {
 
 	img, err := crane.Pull(imageName, crane.WithPlatform(&pltf))
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	fo, err := os.CreateTemp("", "tmpfile-") // in Go version older than 1.17 you can use ioutil.TempFile
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	// close fo on exit and check for its returned error
 	defer func() {
@@ -48,6 +48,8 @@ func PullArtifact(imageName string, platform string) (string, error) {
 	w := bufio.NewWriter(fo)
 
 	crane.Export(img, w)
+
+
 
 	return fo.Name(), nil
 }

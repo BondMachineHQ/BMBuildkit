@@ -21,6 +21,8 @@ func loadFirmware(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	fmt.Println(firmwarePath)
+
 	customCMD, err := cmd.Flags().GetString("cmd")
 	if err != nil {
 		return err
