@@ -58,5 +58,17 @@ bmctl load  <dockerhub USERNAME>/bmtest-alveo:pre-built  xilinx/alveou50/xrt
 ## Quick build with ice40 docker
 
 ```bash
-docker run -e MODULE_NAME=blinky -e SYNTH_FILE=blinky.v -v $PWD/examples/blinky:/opt/source -ti dciangot/yosys bash
+docker run \
+  -e MODULE_NAME=blinky \
+  -e SYNTH_FILE=blinky.v \
+  -v $PWD/examples/blinky/ice40:/opt/source \
+  dciangot/yosys:ice40
+```
+
+```bash
+docker run \
+  -e MODULE_NAME=top \
+  -e SYNTH_FILE=blinky.v \
+  -v $PWD/examples/blinky/primer20k:/opt/source \
+  dciangot/yosys:primer20k
 ```

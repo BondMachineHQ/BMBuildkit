@@ -4,11 +4,11 @@ all: synth pnr packing
 
 synth:
 	cd  $(SRC) \
-	&& yosys -p 'synth_$(BOARD_MODEL) -top $(MODULE_NAME) -json $(MODULE_NAME).json' $(SYNTH_FILE)
+	&& yosys -p 'synth_ice40 -top $(MODULE_NAME) -json $(MODULE_NAME).json' $(SYNTH_FILE)
 
 pnr:
 	cd $(SRC) \
-	&& nextpnr-$(BOARD_MODEL) --package tq144 --hx1k --json $(MODULE_NAME).json --pcf $(MODULE_NAME).pcf --asc $(MODULE_NAME).asc
+	&& nextpnr-ice40 --package tq144 --hx1k --json $(MODULE_NAME).json --pcf $(CONSTRAINT_FILE) --asc $(MODULE_NAME).asc
 
 packing:
 	cd $(SRC) \

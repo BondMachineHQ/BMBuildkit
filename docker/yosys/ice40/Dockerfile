@@ -2,7 +2,7 @@ FROM ubuntu:22.04 as build
 LABEL authors="dciangot"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
-    pkg-config build-essential curl ca-certificates python3 python3-dev git clang bison flex libreadline-dev \
+    pkg-config build-essential curl ca-certificates python3 python3-pip python3-dev git clang bison flex libreadline-dev \
                                                                                                  gawk tcl-dev libffi-dev git mercurial graphviz   \
                                                                                                  xdot pkg-config python3 libftdi-dev \
                                                                                                 python3-dev libboost-all-dev cmake libeigen3-dev
@@ -32,15 +32,15 @@ RUN git clone --recursive https://github.com/YosysHQ/nextpnr.git /tmp/nextpnr \
    -DBUILD_GUI=OFF \
    -DBUILD_PYTHON=ON \
    -DUSE_OPENMP=ON \
- && make \
+ && make -j$(nproc) \
  && make install
-
 
 ENV OUTFILE=firmware.bin
 ENV SRC=/opt/source
 ENV SYNTH_FILE=synth.v
-ENV MODULE_NAME=ice40
-ENV BOARD_MODEL=ice40
+ENV MODULE_NAME=blinky
+ENV YOSYS_OPTIONS=""
+ENV CONSTRAINT_FILE=blinky.pcf
 
 COPY Makefile /opt/Makefile
 
