@@ -7,8 +7,9 @@ import (
 	"path/filepath"
 
 	"dagger.io/dagger"
-	"github.com/BondMachineHQ/BMBuildkit/pkg/build"
 	"github.com/spf13/cobra"
+
+	"github.com/BondMachineHQ/BMBuildkit/pkg/build"
 )
 
 func buildFirmware(cmd *cobra.Command, args []string) error {
@@ -45,18 +46,25 @@ func buildFirmware(cmd *cobra.Command, args []string) error {
 	if bmfile.BitstreamPath == "" && bmfile.Synth != "local" {
 		var engine build.SynthEngine
 
-		if bmfile.Vendor == "lattice" {
-			engine = &build.Yosys{
-				Config: bmfile,
+		switch bmfile.Vendor {
+		case "lattice":
+			{
+				engine = &build.Yosys{
+					Config: bmfile,
+				}
+				err = build.ExecuteEngine(engine)
+				if err != nil {
+					return err
+				}
 			}
-			err = build.ExecuteEngine(engine)
-			if err != nil {
-				return err
+		case "dagger":
+			{
+				fmt.Println("Dagger engine selected")
 			}
-		} else if bmfile.Vendor == "dagger" {
-			fmt.Println("Dagger engine selected")
-		} else {
-			return fmt.Errorf("synth engine not available for %s", bmfile.Vendor)
+		default:
+			{
+				return fmt.Errorf("synth engine not available for %s", bmfile.Vendor)
+			}
 		}
 
 		firmwareFilePath, err = engine.GetFirmwareFile()

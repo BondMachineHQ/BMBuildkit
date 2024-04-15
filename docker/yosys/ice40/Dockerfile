@@ -1,4 +1,6 @@
-FROM ubuntu:22.04 as build
+#FROM ubuntu:22.04 as build
+FROM ghcr.io/dciangot/bmbuild:v1
+
 LABEL authors="dciangot"
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
@@ -37,7 +39,7 @@ RUN git clone --recursive https://github.com/YosysHQ/nextpnr.git /tmp/nextpnr \
 
 ENV OUTFILE=firmware.bin
 ENV SRC=/opt/source
-ENV SYNTH_FILE=synth.v
+ENV SYNTH_FILE=blinky.v
 ENV MODULE_NAME=blinky
 ENV YOSYS_OPTIONS=""
 ENV CONSTRAINT_FILE=blinky.pcf

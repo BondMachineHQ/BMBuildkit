@@ -49,8 +49,6 @@ func PullArtifact(imageName string, platform string) (string, error) {
 
 	crane.Export(img, w)
 
-
-
 	return fo.Name(), nil
 }
 
